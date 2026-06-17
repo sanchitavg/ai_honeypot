@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ portal_name }} — SupplyChain Pro</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 40px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .logo .company {
+      font-size: 13px;
+      color: #8b949e;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .logo .portal-name {
+      font-size: 22px;
+      font-weight: 700;
+      color: #e6edf3;
+      margin-top: 4px;
+    }
+
+    .logo .portal-name span {
+      color: #238636;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #30363d;
+      margin: 20px 0;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: #8b949e;
+      margin-bottom: 6px;
+      margin-top: 16px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 14px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      color: #e6edf3;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus { border-color: #238636; }
+
+    .btn {
+      width: 100%;
+      padding: 11px;
+      margin-top: 24px;
+      background: #238636;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn:hover { background: #2ea043; }
+
+    .error {
+      background: #3d1a1a;
+      border: 1px solid #f85149;
+      border-radius: 6px;
+      color: #f85149;
+      font-size: 13px;
+      padding: 10px 14px;
+      margin-top: 16px;
+    }
+
+    .notice {
+      text-align: center;
+      font-size: 12px;
+      color: #484f58;
+      margin-top: 24px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #1f2d1f;
+      border: 1px solid #238636;
+      border-radius: 4px;
+      color: #3fb950;
+      font-size: 11px;
+      padding: 2px 8px;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">
+      <div class="company">SupplyChain Pro</div>
+      <div class="portal-name">{{ portal_name }} <span>Portal</span></div>
+    </div>
+
+    <div style="text-align:center">
+      <span class="badge">🔒 Secured Access</span>
+    </div>
+
+    <hr class="divider"/>
+
+    {% if error %}
+      <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username"
+             placeholder="Enter your username" autocomplete="off" required />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password"
+             placeholder="Enter your password" required />
+
+      <button type="submit" class="btn">Sign In</button>
+    </form>
+
+    <p class="notice">Authorised personnel only. All access attempts are monitored and logged.</p>
+  </div>
+</body>
+</html>
