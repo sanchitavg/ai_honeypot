@@ -1,157 +1,209 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>{{ portal_name }} — SupplyChain Pro</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>{{ portal_name }} — Secure Login</title>
+    <style>
+        /* ── Reset & base ───────────────────────────────────────────── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #0d1117;
-      color: #c9d1d9;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+        body {
+            background-color: #0d1117;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #c9d1d9;
+        }
 
-    .card {
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 8px;
-      padding: 40px;
-      width: 100%;
-      max-width: 400px;
-    }
+        /* ── Login card ─────────────────────────────────────────────── */
+        .login-card {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 40px 36px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
 
-    .logo {
-      text-align: center;
-      margin-bottom: 24px;
-    }
+        /* ── Logo / header area ─────────────────────────────────────── */
+        .logo-area {
+            text-align: center;
+            margin-bottom: 28px;
+        }
 
-    .logo .company {
-      font-size: 13px;
-      color: #8b949e;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
+        .logo-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
 
-    .logo .portal-name {
-      font-size: 22px;
-      font-weight: 700;
-      color: #e6edf3;
-      margin-top: 4px;
-    }
+        .company-name {
+            font-size: 13px;
+            color: #8b949e;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
 
-    .logo .portal-name span {
-      color: #238636;
-    }
+        .portal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #e6edf3;
+        }
 
-    .divider {
-      border: none;
-      border-top: 1px solid #30363d;
-      margin: 20px 0;
-    }
+        /* ── Divider ────────────────────────────────────────────────── */
+        .divider {
+            border: none;
+            border-top: 1px solid #30363d;
+            margin: 20px 0;
+        }
 
-    label {
-      display: block;
-      font-size: 13px;
-      color: #8b949e;
-      margin-bottom: 6px;
-      margin-top: 16px;
-    }
+        /* ── Form fields ────────────────────────────────────────────── */
+        .form-group {
+            margin-bottom: 18px;
+        }
 
-    input {
-      width: 100%;
-      padding: 10px 14px;
-      background: #0d1117;
-      border: 1px solid #30363d;
-      border-radius: 6px;
-      color: #e6edf3;
-      font-size: 14px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
+        label {
+            display: block;
+            font-size: 13px;
+            color: #8b949e;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
 
-    input:focus { border-color: #238636; }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px 14px;
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            color: #e6edf3;
+            font-size: 14px;
+            transition: border-color 0.2s;
+            outline: none;
+        }
 
-    .btn {
-      width: 100%;
-      padding: 11px;
-      margin-top: 24px;
-      background: #238636;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #1f6feb;
+        }
 
-    .btn:hover { background: #2ea043; }
+        /* ── Login button ───────────────────────────────────────────── */
+        .btn-login {
+            width: 100%;
+            padding: 11px;
+            background-color: #1f6feb;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 6px;
+        }
 
-    .error {
-      background: #3d1a1a;
-      border: 1px solid #f85149;
-      border-radius: 6px;
-      color: #f85149;
-      font-size: 13px;
-      padding: 10px 14px;
-      margin-top: 16px;
-    }
+        .btn-login:hover {
+            background-color: #388bfd;
+        }
 
-    .notice {
-      text-align: center;
-      font-size: 12px;
-      color: #484f58;
-      margin-top: 24px;
-    }
+        /* ── Error message ──────────────────────────────────────────── */
+        .error-msg {
+            background-color: #3d1f1f;
+            border: 1px solid #f85149;
+            color: #f85149;
+            border-radius: 6px;
+            padding: 10px 14px;
+            font-size: 13px;
+            margin-bottom: 18px;
+            display: {{ 'block' if error else 'none' }};
+        }
 
-    .badge {
-      display: inline-block;
-      background: #1f2d1f;
-      border: 1px solid #238636;
-      border-radius: 4px;
-      color: #3fb950;
-      font-size: 11px;
-      padding: 2px 8px;
-      margin-bottom: 16px;
-    }
-  </style>
+        /* ── Footer ─────────────────────────────────────────────────── */
+        .footer {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 11px;
+            color: #484f58;
+        }
+
+        .security-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 8px;
+            font-size: 11px;
+            color: #3fb950;
+        }
+    </style>
 </head>
 <body>
-  <div class="card">
-    <div class="logo">
-      <div class="company">SupplyChain Pro</div>
-      <div class="portal-name">{{ portal_name }} <span>Portal</span></div>
-    </div>
 
-    <div style="text-align:center">
-      <span class="badge">🔒 Secured Access</span>
+<div class="login-card">
+
+    <!-- Header -->
+    <div class="logo-area">
+        <div class="logo-icon">🔒</div>
+        <div class="company-name">SupplyChain Corp — Internal Systems</div>
+        <div class="portal-title">{{ portal_name }}</div>
     </div>
 
     <hr class="divider"/>
 
-    {% if error %}
-      <div class="error">{{ error }}</div>
-    {% endif %}
+    <!-- Error message (shown only on failed login) -->
+    <div class="error-msg">
+        ⚠️ {{ error }}
+    </div>
 
-    <form method="POST">
-      <label for="username">Username</label>
-      <input type="text" id="username" name="username"
-             placeholder="Enter your username" autocomplete="off" required />
+    <!-- Login form -->
+    <form method="POST" action="/login">
 
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password"
-             placeholder="Enter your password" required />
+        <div class="form-group">
+            <label for="username">Employee ID / Username</label>
+            <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Enter your employee ID"
+                autocomplete="off"
+                required
+            />
+        </div>
 
-      <button type="submit" class="btn">Sign In</button>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                required
+            />
+        </div>
+
+        <button type="submit" class="btn-login">
+            Sign In →
+        </button>
+
     </form>
 
-    <p class="notice">Authorised personnel only. All access attempts are monitored and logged.</p>
-  </div>
+    <!-- Footer -->
+    <div class="footer">
+        <div>Authorised access only. All sessions are monitored and recorded.</div>
+        <div class="security-badge">
+            🛡️ SSL Secured &nbsp;|&nbsp; ISO 27001 Certified
+        </div>
+    </div>
+
+</div>
+
 </body>
 </html>
