@@ -3,3 +3,6 @@
 "*.db-shm" 
 "*.db-wal" 
 "models/*.pkl" 
+venv/
+.env
+*.db
