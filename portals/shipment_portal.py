@@ -275,5 +275,5 @@ def catch_all_probes(e):
 # ── Entry point ───────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     init_db()         # Create attacker_logs table if it does not exist yet
-    print("Shipment Portal running on http://127.0.0.1:5003")
-    app.run(host="0.0.0.0", port=5003, debug=False)
+    print("Shipment Portal running on http://127.0.0.1:5004")
+    app.run(host="0.0.0.0", port=5004, debug=False)

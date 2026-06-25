@@ -258,5 +258,5 @@ def catch_all_probes(e):
 # ── Entry point ───────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     init_db()          # Create the attacker_logs table if it does not exist yet
-    print("Inventory Portal running on http://127.0.0.1:5002")
-    app.run(host="0.0.0.0", port=5002, debug=False)
+    print("Inventory Portal running on http://127.0.0.1:5003")
+    app.run(host="0.0.0.0", port=5003, debug=False)
