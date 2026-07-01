@@ -1,11 +1,11 @@
-"__pycache__/" 
-"*.pyc" 
-"*.db-shm" 
-"*.db-wal" 
-"models/*.pkl" 
+__pycache__/
+*.pyc
+*.db-shm
+*.db-wal
+models/*.pkl
 venv/
 .env
-*.db
+*.dbgit
 venv/
 *.db
 *.db-shm

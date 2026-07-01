@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AI Honeypot — Threat Dashboard</title>
+    <style>
+        /* ── Reset & base — same palette as login.html ─────────────────── */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: #0d1117;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #c9d1d9;
+            padding: 32px;
+        }
+
+        h1 { color: #e6edf3; font-size: 22px; margin-bottom: 4px; }
+        .subtitle { color: #8b949e; font-size: 13px; margin-bottom: 28px; }
+
+        /* ── Summary cards ─────────────────────────────────────────────── */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .card {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 18px 20px;
+        }
+
+        .card .label {
+            font-size: 12px;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .card .value { font-size: 28px; font-weight: 700; color: #e6edf3; }
+
+        .card.critical .value { color: #f85149; }
+        .card.high     .value { color: #d29922; }
+        .card.anomaly  .value { color: #a371f7; }
+
+        /* ── Section panels ────────────────────────────────────────────── */
+        .panel {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .panel h2 {
+            font-size: 15px;
+            color: #e6edf3;
+            margin-bottom: 14px;
+        }
+
+        /* ── Top IPs list ───────────────────────────────────────────────── */
+        .ip-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #21262d;
+            font-size: 13px;
+        }
+        .ip-row:last-child { border-bottom: none; }
+        .ip-score { color: #f85149; font-weight: 600; }
+
+        /* ── Events table ───────────────────────────────────────────────── */
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+
+        th {
+            background-color: #0d1117;
+            color: #8b949e;
+            text-align: left;
+            padding: 10px 8px;
+            border-bottom: 1px solid #30363d;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #21262d;
+            vertical-align: top;
+        }
+
+        tr:hover td { background-color: #1c2129; }
+
+        .table-scroll { max-height: 560px; overflow-y: auto; }
+
+        /* ── Badges ─────────────────────────────────────────────────────── */
+        .badge {
+            display: inline-block;
+            padding: 2px 9px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .risk-CRITICAL { background: #3d1f1f; color: #f85149; }
+        .risk-HIGH     { background: #3a2a10; color: #d29922; }
+        .risk-MEDIUM   { background: #172a3a; color: #58a6ff; }
+        .risk-LOW      { background: #12261c; color: #3fb950; }
+
+        .threat-CRITICAL, .threat-HIGH { background: #3d1f1f; color: #f85149; }
+        .threat-MEDIUM   { background: #3a2a10; color: #d29922; }
+        .threat-LOW      { background: #172a3a; color: #58a6ff; }
+        .threat-CLEAN    { background: #12261c; color: #3fb950; }
+        .threat-NOT_CHECKED, .threat-UNKNOWN { background: #21262d; color: #8b949e; }
+
+        .anomaly-flag { color: #a371f7; font-weight: 600; }
+
+        /* ── Explain button + panel ─────────────────────────────────────── */
+        .explain-btn {
+            background: #1f6feb;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        .explain-btn:hover { background: #388bfd; }
+
+        .explain-result {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #8b949e;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 8px 10px;
+            display: none;
+        }
+
+        .refresh-btn {
+            background: #21262d;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 13px;
+            cursor: pointer;
+            float: right;
+        }
+        .refresh-btn:hover { border-color: #1f6feb; }
+
+        .chart-img { width: 100%; border-radius: 8px; margin-top: 6px; }
+
+        .empty-state { color: #8b949e; font-size: 13px; padding: 20px 0; }
+    </style>
+</head>
+<body>
+
+    <!-- ── Header ─────────────────────────────────────────────────────── -->
+    <h1>🛡️ AI Honeypot — Threat Intelligence Dashboard</h1>
+    <div class="subtitle">
+        SupplyChain Corp Honeypot &nbsp;|&nbsp;
+        {{ summary.total_events }} events across {{ summary.portals_hit | length }} portal(s)
+        &nbsp;|&nbsp; {{ summary.unique_ip_count }} unique attacker IP(s)
+    </div>
+
+    <!-- ── Summary cards ──────────────────────────────────────────────── -->
+    <div class="cards">
+        <div class="card">
+            <div class="label">Total Events</div>
+            <div class="value">{{ summary.total_events }}</div>
+        </div>
+        <div class="card">
+            <div class="label">Unique Attacker IPs</div>
+            <div class="value">{{ summary.unique_ip_count }}</div>
+        </div>
+        <div class="card critical">
+            <div class="label">Critical Risk Events</div>
+            <div class="value">{{ summary.risk_counts.get('CRITICAL', 0) }}</div>
+        </div>
+        <div class="card high">
+            <div class="label">High Risk Events</div>
+            <div class="value">{{ summary.risk_counts.get('HIGH', 0) }}</div>
+        </div>
+        <div class="card anomaly">
+            <div class="label">Anomalies Flagged</div>
+            <div class="value">{{ summary.anomaly_count }}</div>
+        </div>
+    </div>
+
+    <!-- ── Top suspicious IPs ─────────────────────────────────────────── -->
+    <div class="panel">
+        <h2>Top Suspicious IPs</h2>
+        {% if summary.top_ips %}
+            {% for ip, score in summary.top_ips %}
+            <div class="ip-row">
+                <span>{{ ip }}</span>
+                <span class="ip-score">risk score: {{ score }}</span>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">No attacker activity recorded yet. Visit one of the portals to generate some.</div>
+        {% endif %}
+    </div>
+
+    <!-- ── Global SHAP feature importance chart ───────────────────────── -->
+    <div class="panel">
+        <h2>Global Feature Importance (SHAP)</h2>
+        <div class="subtitle" style="margin-bottom:0;">
+            Which of the 13 signals drive the AI's decisions across ALL predictions.
+        </div>
+        <img class="chart-img" src="{{ url_for('shap_summary_chart') }}"
+             alt="SHAP summary chart"
+             onerror="this.style.display='none'; this.insertAdjacentHTML('afterend', '<div class=\'empty-state\'>Chart not found — run explainability/shap_explainer.py to generate models/shap_summary.png</div>');" />
+    </div>
+
+    <!-- ── Events table ────────────────────────────────────────────────── -->
+    <div class="panel">
+        <button class="refresh-btn" onclick="refreshThreatIntel()">🔄 Refresh Threat Intel</button>
+        <h2>All Attacker Events</h2>
+
+        {% if logs %}
+        <div class="table-scroll">
+        <table>
+            <thead>
+                <tr>
+                    <th>Time (UTC)</th>
+                    <th>IP Address</th>
+                    <th>Portal</th>
+                    <th>Action</th>
+                    <th>AI Verdict</th>
+                    <th>Confidence</th>
+                    <th>Risk</th>
+                    <th>Anomaly</th>
+                    <th>Threat Intel</th>
+                    <th>Explain</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in logs %}
+                <tr id="row-{{ row.id }}">
+                    <td>{{ row.timestamp }}</td>
+                    <td>{{ row.ip_address }}</td>
+                    <td>{{ row.portal }}</td>
+                    <td>{{ row.action }}</td>
+                    <td>{{ row.predicted_attack }}</td>
+                    <td>{{ (row.confidence * 100) | round(1) }}%</td>
+                    <td><span class="badge risk-{{ row.risk_level }}">{{ row.risk_level }}</span></td>
+                    <td>{% if row.is_anomaly %}<span class="anomaly-flag">⚠ Yes</span>{% else %}—{% endif %}</td>
+                    <td><span class="badge threat-{{ row.threat_level | replace(' ', '_') }}">{{ row.threat_level }}</span></td>
+                    <td>
+                        <button class="explain-btn" data-log-id="{{ row.id }}" onclick="explainRow(this.dataset.logId)">Why?</button>
+                        <div class="explain-result" id="explain-{{ row.id }}"></div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            No logs found in honeypot.db yet. Start a portal (e.g. supplier_portal.py)
+            and try logging in with a wrong password to generate your first event.
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // ── "Why?" button: calls /api/explain/<id> and shows the top SHAP reasons ──
+        async function explainRow(logId) {
+            const box = document.getElementById(`explain-${logId}`);
+            box.style.display = "block";
+            box.textContent = "Analysing with SHAP …";
+
+            try {
+                const response = await fetch(`/api/explain/${logId}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    box.textContent = `Error: ${data.error}`;
+                    return;
+                }
+
+                const entries = Object.entries(data.feature_impacts).slice(0, 4);
+                const lines = entries.map(([name, val]) => {
+                    const direction = val >= 0 ? "pushed toward" : "pushed away from";
+                    return `• ${name}: ${val} (${direction} this verdict)`;
+                });
+                box.innerHTML = `<strong>Top reason: ${data.top_reason}</strong><br>` + lines.join("<br>");
+            } catch (err) {
+                box.textContent = "Could not load explanation. Is the dashboard server running?";
+            }
+        }
+
+        // ── "Refresh Threat Intel" button: calls /api/refresh-threat-intel ──
+        async function refreshThreatIntel() {
+            if (!confirm("This will call AbuseIPDB and VirusTotal for every unique IP. Continue?")) {
+                return;
+            }
+            try {
+                const response = await fetch("/api/refresh-threat-intel", { method: "POST" });
+                const data = await response.json();
+                alert(data.message || "Done.");
+                location.reload();
+            } catch (err) {
+                alert("Refresh failed. Check the Terminal running dashboard/app.py for errors.");
+            }
+        }
+    </script>
+
+</body>
+</html>
